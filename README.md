@@ -77,3 +77,6 @@ fleetcarrier_config.json → your fuel threshold setting
 📜 License
 This project is licensed under the MIT License.
 You are free to use, share, and modify it.
+
+![Powered by FCM](fcm-powered-banner.png)
+
