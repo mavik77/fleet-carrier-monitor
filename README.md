@@ -5,6 +5,12 @@ It provides critical information directly inside the EDMC interface and alerts y
 ✨ Features
 Displays live data:
 
+## 🖼️ Preview
+
+Here's how Fleet Carrier Monitor looks in EDMC:
+
+![Fleet Carrier Monitor screenshot](screenshot.png)
+
 ✅ Carrier name
 
 ✅ Current system (location)
