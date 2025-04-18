@@ -25,6 +25,10 @@ Here's how Fleet Carrier Monitor looks in EDMC:
 
 ⚙️ Configurable fuel alert threshold via EDMC settings tab
 
+### ⚙️ Settings Tab (fuel alert threshold)
+
+![Fleet Carrier Monitor - settings tab](settings.png)
+
 💾 Saves last known data to CSV
 
 📥 Loads previous session on EDMC startup
