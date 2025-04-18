@@ -2,14 +2,16 @@ Fleet Carrier Monitor
 Fleet Carrier Monitor is a plugin for EDMarketConnector (EDMC) that tracks your Fleet Carrier status in Elite Dangerous in real time.
 It provides critical information directly inside the EDMC interface and alerts you if your fuel gets low.
 
-✨ Features
-Displays live data:
+👉 [Download the latest release](https://github.com/mavik77/fleet-carrier-monitor/releases/latest)
 
 ## 🖼️ Preview
 
 Here's how Fleet Carrier Monitor looks in EDMC:
 
 ![Fleet Carrier Monitor screenshot](screenshot.png)
+
+✨ Features
+Displays live data:
 
 ✅ Carrier name
 
@@ -79,4 +81,7 @@ This project is licensed under the MIT License.
 You are free to use, share, and modify it.
 
 ![Powered by FCM](fcm-powered-banner.png)
+
+👉 [Download the latest release](https://github.com/mavik77/fleet-carrier-monitor/releases/latest)
+
 
