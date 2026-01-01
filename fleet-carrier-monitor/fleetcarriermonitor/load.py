@@ -79,7 +79,7 @@ def plugin_prefs(parent, cmdr, is_beta):
 
     frame = nb.Frame(parent)
     nb.Label(frame, text="Alert if fuel below:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
-    entry = nb.Entry(frame)
+    entry = nb.EntryMenu(frame)
     entry.insert(0, str(fuel_alert_threshold))
     entry.grid(row=0, column=1, padx=10, pady=5)
     nb.Button(frame, text="Save", command=save_settings).grid(row=1, column=0, columnspan=2, pady=10)
