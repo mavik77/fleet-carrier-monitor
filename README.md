@@ -4,6 +4,19 @@ It provides critical information directly inside the EDMC interface and alerts y
 
 👉 [Download the latest release](https://github.com/mavik77/fleet-carrier-monitor/releases/latest)
 
+✅ Current Features (as of v1.10)
+
+🧾 Saves data to fc_status.csv for persistent state across EDMC restarts.
+
+🪪 Auto-detects Carrier ID from log file.
+
+✏️ Optional manual Carrier ID override from settings (for testing/edge cases).
+
+✏️ Entry was renamed to EntryMenu by @Stumpii in #1
+
+🐞 Logs all debug messages to fcm_debug_log.txt in plugin folder.
+
+
 🆕 Changelog
 v0.3.1 – Dependency Fix (Thanks @Stumpii)
 
