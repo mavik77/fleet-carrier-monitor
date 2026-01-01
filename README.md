@@ -4,6 +4,28 @@ It provides critical information directly inside the EDMC interface and alerts y
 
 👉 [Download the latest release](https://github.com/mavik77/fleet-carrier-monitor/releases/latest)
 
+🆕 Changelog
+v0.3.1 – Dependency Fix (Thanks @Stumpii)
+
+🔧 Replaced deprecated nb.Entry with nb.EntryMenu to fix compatibility with latest EDMC versions.
+
+v0.3.0 – Settings Tab Added
+
+⚙️ New tab in EDMC settings to let users define fuel alert threshold.
+
+💾 Settings persist between sessions.
+
+v0.2.0 – Fuel Alert System
+
+🔥 Shows fuel warning if below threshold (red text + emoji)
+
+✨ Manual refresh button
+
+v0.1.0 – Initial Version
+
+🚀 Displays name, fuel, credits, and location of your FC
+
+
 ## 🖼️ Preview
 
 Here's how Fleet Carrier Monitor looks in EDMC:
