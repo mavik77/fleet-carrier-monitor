@@ -11,6 +11,18 @@ import datetime
 import traceback
 import threading
 
+import logging
+from config import appname, config
+
+# This could also be returned from plugin_start3()
+plugin_name = os.path.basename(os.path.dirname(__file__))
+
+# A Logger is used per 'found' plugin to make it easy to include the plugin's
+# folder name in the logging output format.
+# NB: plugin_name here *must* be the plugin's folder name as per the preceding
+#     code, else the logger won't be properly set up.
+logger = logging.getLogger(f'{appname}.{plugin_name}')
+
 carrier_data = {
     "name": "Unknown",
     "location": "Unknown",
@@ -118,6 +130,7 @@ def plugin_start3(plugin_dir):
     plugin_directory = plugin_dir
     _init_logger()
     log("Plugin started", data={"plugin_directory": plugin_directory})
+    # logger.info(f"Plugin started. Plugin folder: {plugin_dir}") # TODO - Use instead of log() function
 
     try:
         path = os.path.join(plugin_directory, "fc_status.csv")
@@ -132,6 +145,8 @@ def plugin_start3(plugin_dir):
             log("CSV not found (first run?)", data={"path": path})
     except Exception as e:
         log_exception("Failed to read CSV", e)
+        # # Automatically includes exception information.
+        # logger.exception("Failed to read CSV:") # TODO - Use instead of log() function
 
     try:
         path = os.path.join(plugin_directory, settings_file)
@@ -145,13 +160,15 @@ def plugin_start3(plugin_dir):
             log("Config not found (will use defaults / auto-detect)", data={"path": path})
     except Exception as e:
         log_exception("Failed to read config", e)
+        # # Automatically includes exception information.
+        # logger.exception("Failed to read config:") # TODO - Use instead of log() function
 
     return "Fleet Carrier Monitor"
 
 
 def plugin_stop():
     log("Plugin stopped")
-
+    # logger.info("Plugin stopped") # TODO - Use instead of log() function
 
 def plugin_app(parent):
     frame = tk.Frame(parent, bg="#1e1e1e")
@@ -260,7 +277,8 @@ def save_data_to_csv():
             writer.writerow(carrier_data)
     except Exception as e:
         log_exception("Failed to save CSV", e)
-
+        # # Automatically includes exception information.
+        # logger.exception("Failed to save CSV:") # TODO - Use instead of log() function
 
 def find_latest_carrier_location():
     try:
@@ -286,6 +304,8 @@ def find_latest_carrier_location():
                         return loc
     except Exception as e:
         log_exception("Error reading CarrierLocation", e)
+        # # Automatically includes exception information.
+        # logger.exception("Error reading CarrierLocation from log:") # TODO - Use instead of log() function
     return None
 
 
