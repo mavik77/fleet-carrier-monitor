@@ -7,9 +7,10 @@ It provides critical information directly inside the EDMC interface and alerts y
 
 🆕 Changelog v1.1.1] – 2026-01-02
 
-### Added
 🔧 Switched to EDMC-style logger (thanks to @Stumpii).
+
 🔧 Code prepared for future integration with EDMC plugin list.
+
 
 
 ✅ Current Features (as of v1.10)
