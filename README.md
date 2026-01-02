@@ -4,6 +4,14 @@ It provides critical information directly inside the EDMC interface and alerts y
 
 👉 [Download the latest release](https://github.com/mavik77/fleet-carrier-monitor/releases/latest)
 
+
+🆕 Changelog v1.1.1] – 2026-01-02
+
+### Added
+🔧 Switched to EDMC-style logger (thanks to @Stumpii).
+🔧 Code prepared for future integration with EDMC plugin list.
+
+
 ✅ Current Features (as of v1.10)
 
 🧾 Saves data to fc_status.csv for persistent state across EDMC restarts.
