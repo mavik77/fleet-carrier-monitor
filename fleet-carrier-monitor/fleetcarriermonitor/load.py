@@ -12,7 +12,9 @@ import traceback
 import threading
 
 import logging
+from companion import CAPIData, SERVER_LIVE, SERVER_LEGACY, SERVER_BETA
 from config import appname, config
+from typing import Optional
 
 # This could also be returned from plugin_start3()
 plugin_name = os.path.basename(os.path.dirname(__file__))
@@ -37,6 +39,8 @@ fuel_alert_threshold = 200
 carrier_id = None
 settings_file = "fleetcarrier_config.json"
 blinking = False
+export_path = ""
+export_path_var: Optional[tk.StringVar] = None
 
 # -----------------------------
 # File logger (debug to txt)
@@ -125,8 +129,15 @@ def _init_logger():
             pass
 
 
+class CustomCAPIDataEncoder(json.JSONEncoder):
+    """Allow for json dumping via specified encoder."""
+
+    def default(self, o):
+        """Tell JSON encoder that we're actually just a dict."""
+        return o.__dict__
+
 def plugin_start3(plugin_dir):
-    global plugin_directory, fuel_alert_threshold, carrier_id
+    global plugin_directory, fuel_alert_threshold, carrier_id, export_path
     plugin_directory = plugin_dir
     _init_logger()
     log("Plugin started", data={"plugin_directory": plugin_directory})
@@ -163,6 +174,10 @@ def plugin_start3(plugin_dir):
         # # Automatically includes exception information.
         # logger.exception("Failed to read config:") # TODO - Use instead of log() function
 
+    export_path = config.get_str("fleetcarriermonitor_export_path")  # Retrieve saved value from config
+    if export_path == "":
+        export_path = plugin_dir
+
     return "Fleet Carrier Monitor"
 
 
@@ -191,6 +206,7 @@ def plugin_app(parent):
 
 
 def plugin_prefs(parent, cmdr, is_beta):
+    global export_path, export_path_var
     def save_settings():
         try:
             value = int(fuel_entry.get())
@@ -207,24 +223,43 @@ def plugin_prefs(parent, cmdr, is_beta):
             messagebox.showerror("Error", str(e))
 
     frame = nb.Frame(parent)
+    frame.columnconfigure(2, weight=1)
     nb.Label(frame, text="Alert if fuel below:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
     fuel_entry = nb.EntryMenu(frame)
     fuel_entry.insert(0, str(fuel_alert_threshold))
-    fuel_entry.grid(row=0, column=1, padx=10, pady=5)
+    fuel_entry.grid(row=0, column=1, padx=10, pady=5, sticky="w")
 
     nb.Label(frame, text="Your Carrier ID:").grid(row=1, column=0, sticky="w", padx=10, pady=5)
     carrier_entry = nb.EntryMenu(frame)
     if carrier_id:
         carrier_entry.insert(0, carrier_id)
-    carrier_entry.grid(row=1, column=1, padx=10, pady=5)
+    carrier_entry.grid(row=1, column=1, padx=10, pady=5, sticky="w")
 
-    nb.Label(frame, text="Leave blank to auto-detect from game logs.", wraplength=400).grid(row=2, column=0, columnspan=2, padx=10, pady=5)
+    nb.Label(frame, text="Leave blank to auto-detect from game logs.", wraplength=400).grid(row=1, column=2, columnspan=1, padx=10, pady=5, sticky="w")
+
+    nb.Label(frame, text="Export FC Data folder:").grid(row=2, column=0, sticky="w", padx=10, pady=5)
+    export_path_var = tk.StringVar(value=export_path)
+    export_path_entry = nb.EntryMenu(frame, textvariable=export_path_var)
+    export_path_entry.grid(row=2, column=1, columnspan=2, padx=10, pady=5, sticky="ew")
 
     nb.Button(frame, text="Save", command=save_settings).grid(row=3, column=0, columnspan=2, pady=10)
 
     log("Preferences UI opened", data={"cmdr": cmdr, "is_beta": is_beta})
     return frame
 
+def prefs_changed(cmdr: str, is_beta: bool) -> None:
+    """
+    Save settings.
+    """
+    global export_path, export_path_var
+
+    # Update internal settings
+    export_path = export_path_var.get()
+
+    # Save setting
+    config.set('fleetcarriermonitor_export_path', export_path)  # Store new value in config
+
+    save_data_to_csv()
 
 def update_ui():
     try:
@@ -381,3 +416,46 @@ def journal_entry(cmdr, is_beta, system, station, entry, state):
 
     except Exception as e:
         log_exception("journal_entry failed", e)
+	
+def capi_fleetcarrier(data):
+    """
+    Event raised by EDMarketConnector when we have new data on our Fleet Carrier via Frontier CAPI.
+    @param data: Fleet Carrier CAPI data dict holding the FC data.
+    """
+    global export_path
+
+    if data.get('name') is None or data['name'].get('callsign') is None:
+        raise ValueError("this isn't possible")
+
+    logger.info(f"Received CAPI FC Data for callsign: {data['name']['callsign']}")
+
+    if not os.path.exists(export_path):
+        logger.warning(f"Export folder '{export_path}' does not exist.")
+        return
+
+    # Determining source galaxy for the data
+    if data.source_host == SERVER_LIVE:
+        file_name: str = ""
+        file_name += f"FleetCarrier.{data['name']['callsign']}"
+        # file_name += time.strftime('.%Y-%m-%dT%H.%M.%S', time.localtime())
+        file_name += '.json'
+
+        try:
+            path = os.path.join(export_path, file_name)
+            logger.info(f"FC data export path: {path}")
+            with open(f'{path}', 'wb') as h:
+                h.write(json.dumps(data, cls=CustomCAPIDataEncoder,
+                                   ensure_ascii=False,
+                                   indent=2,
+                                   sort_keys=True,
+                                   separators=(',', ': ')).encode('utf-8'))
+
+        except Exception as e:
+            # Automatically includes exception information.
+            logger.exception("Failed to write CAPI FC Data to JSON file:")
+
+    elif data.source_host == SERVER_BETA:
+        pass
+
+    elif data.source_host == SERVER_LEGACY:
+        pass
